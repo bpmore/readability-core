@@ -67,7 +67,9 @@ it('counts as the library it was ported from, on a sample of the dictionary', fu
     // after the port matched it on all 235,976 words of /usr/share/dict.
     // Some of these numbers are wrong ("science" is one here); the claim is
     // fidelity, not correctness. Improve a rule and the words it changes
-    // show up here, to be checked and updated on purpose.
+    // show up here, to be checked and updated on purpose. Departures so
+    // far, each marked in the counter: the "-sed" rule ("polishedness"
+    // here went from 4 to 3), and the "pro-" exceptions.
     $counter = new EnglishSyllableCounter;
     $differences = [];
 

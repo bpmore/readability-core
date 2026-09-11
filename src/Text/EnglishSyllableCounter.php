@@ -15,8 +15,8 @@ namespace Bpmore\ReadabilityCore\Text;
  * Lingua::EN::Syllable. Ported rather than depended on: the library's last
  * release was in 2018, it calls a function PHP has deprecated, and these
  * lists are the kind of thing that wants fixing in place when a word
- * comes up wrong. The rules are as they came; a change to any of them is
- * a change to every score.
+ * comes up wrong. Every departure from the original is marked where it
+ * is made, because a change to any rule is a change to every score.
  *
  * Two things happen before the rules, because they know only A to Z:
  *
@@ -40,6 +40,11 @@ final class EnglishSyllableCounter implements SyllableCounter
         'jukebox' => 2, 'karate' => 3, 'machete' => 3, 'maybe' => 2, 'people' => 2, 'recipe' => 3, 'sesame' => 3,
         'shoreline' => 2, 'simile' => 3, 'syncope' => 3, 'tamale' => 3, 'yosemite' => 4, 'daphne' => 2, 'eurydice' => 4,
         'euterpe' => 3, 'hermione' => 4, 'penelope' => 4, 'persephone' => 4, 'phoebe' => 2, 'zoe' => 2,
+        // Added here: the "pro-" prefix rule takes a syllable the rest of
+        // the word cannot give back when the rest is a silent "e" or the
+        // second half of a diphthong. Found by the reference-text tests.
+        'prove' => 1, 'proved' => 1, 'proud' => 1, 'proudly' => 2, 'prouder' => 2, 'proudest' => 2, 'proof' => 1,
+        'prose' => 1, 'probe' => 1, 'probed' => 1, 'prone' => 1,
     ];
 
     /**
@@ -66,12 +71,19 @@ final class EnglishSyllableCounter implements SyllableCounter
     /**
      * Sounds the vowel count takes for one syllable that are two.
      *
+     * One rule differs from the original: "[aeiouy]sh?e[rsd]$" is now
+     * "[aeiouy]sh?e[rs]$". With the "d" it gave every "-sed" and "-shed"
+     * past participle a syllable it does not have: "used", "based",
+     * "closed", "washed", "finished", "diagnosed", "advised" were all one
+     * too many. Found by the reference-text tests; 427 dictionary words
+     * changed, each by one, each to the dictionary's answer.
+     *
      * @var list<string>
      */
     private const TWO_NOT_ONE = [
         '([^s]|^)ia', 'riet', 'dien', 'iu', 'io', 'eo($|[b-df-hj-np-tv-z])', 'ii', '[ou]a$', '[aeiouym]bl$', '[aeiou]{3}',
         '[aeiou]y[aeiou]', '^mc', 'ism$', 'asm$', 'thm$', '([^aeiouy])\1l$', '[^l]lien', '^coa[dglx].', '[^gq]ua[^auieo]',
-        'dnt$', 'uity$', '[^aeiouy]ie(r|st|t)$', 'eings?$', '[aeiouy]sh?e[rsd]$', 'iell', 'dea$', 'real', '[^aeiou]y[ae]',
+        'dnt$', 'uity$', '[^aeiouy]ie(r|st|t)$', 'eings?$', '[aeiouy]sh?e[rs]$', 'iell', 'dea$', 'real', '[^aeiou]y[ae]',
         'gean$', 'uen',
     ];
 

@@ -133,7 +133,12 @@ Two corrections happen before the rules: accents come off ("café" is not
 "caf") and a vowelless initialism is read letter by letter ("CDC" is
 three). The exception lists are in the class, so a word that comes up
 wrong can be fixed in place — and the fidelity test will show exactly
-which other words the fix changed.
+which other words the fix changed. Two such fixes have been made since the
+port, each marked in the class where it was made: "-sed" past participles
+("used", "closed", "diagnosed") no longer get a syllable they do not have,
+and the "pro-" prefix no longer takes one from "prove", "proud" or "proof".
+Both were found by running the published reference texts through the
+whole chain, which the test suite does.
 
 ## Grades
 
