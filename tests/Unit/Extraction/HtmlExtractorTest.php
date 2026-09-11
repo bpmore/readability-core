@@ -130,3 +130,25 @@ it('produces no blocks for markup that says nothing', function () {
 it('refuses a node tree, which is the other extractor\'s job', function () {
     (new HtmlExtractor)->extract([['type' => 'paragraph']]);
 })->throws(InvalidArgumentException::class, 'BardExtractor');
+
+it('records ids and roles on the way down, which is how a careful site marks its references', function () {
+    $blocks = (new HtmlExtractor)->extract(
+        '<section id="notes" role="doc-endnotes"><ol><li id="fn1" role="doc-endnote">A note.</li></ol></section><p>Prose.</p>'
+    )->blocks;
+
+    expect($blocks[0]->origin->ids)->toBe(['notes', 'fn1']);
+    expect($blocks[0]->origin->roles)->toBe(['doc-endnotes', 'doc-endnote']);
+    expect($blocks[1]->origin->ids)->toBe([]);
+    expect($blocks[1]->origin->roles)->toBe([]);
+});
+
+it('leaves out ignored tags and ignored classes, inline or block, when told to', function () {
+    $html = '<p>Run <code>composer install</code> first. <span class="no-readability">Ignore me.</span> Then go.</p>'
+        .'<div class="no-readability"><p>Whole block ignored.</p></div><p>Kept.</p>';
+
+    expect((new HtmlExtractor)->extract($html)->text())
+        ->toBe("Run composer install first. Ignore me. Then go.\n\nWhole block ignored.\n\nKept.");
+
+    expect((new HtmlExtractor(ignoredTags: ['code'], ignoredClasses: ['no-readability']))->extract($html)->text())
+        ->toBe("Run first. Then go.\n\nKept.");
+});

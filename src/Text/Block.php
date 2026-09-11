@@ -23,6 +23,12 @@ final class Block
         public readonly int $level = 0,
     ) {}
 
+    /** The same block, saying less: what an exclusion leaves of it. */
+    public function withText(string $text): self
+    {
+        return new self($this->kind, $text, $this->origin, $this->level);
+    }
+
     public function isHeading(): bool
     {
         return $this->kind === BlockKind::Heading;

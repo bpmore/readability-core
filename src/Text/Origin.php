@@ -21,6 +21,8 @@ final class Origin
      * @param  list<string>  $classes  HTML classes on the element and its ancestors, nearest last, without duplicates
      * @param  list<string>  $sets  Bard set handles the block sits inside, outermost first
      * @param  ?string  $path  the Bard node path, as child indices joined with dots (`3.0`, or `2.body.1` through a set's field); null for anything but Bard
+     * @param  list<string>  $ids  HTML ids on the element and its ancestors, outermost first
+     * @param  list<string>  $roles  ARIA roles on the element and its ancestors, outermost first; `doc-endnotes` and its kin are how a careful site marks its references
      */
     public function __construct(
         public readonly string $tag,
@@ -28,6 +30,8 @@ final class Origin
         public readonly array $classes = [],
         public readonly array $sets = [],
         public readonly ?string $path = null,
+        public readonly array $ids = [],
+        public readonly array $roles = [],
     ) {}
 
     /** The element directly enclosing this one, if any. */

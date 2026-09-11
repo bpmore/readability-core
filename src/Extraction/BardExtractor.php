@@ -42,6 +42,11 @@ final class BardExtractor implements Extractor
         'hardBreak' => 'br',
     ];
 
+    /**
+     * @param  list<string>  $ignoredMarks  text carrying one of these marks is left out: `code`, for inline code
+     */
+    public function __construct(private readonly array $ignoredMarks = []) {}
+
     public function extract(string|array $source): Document
     {
         if (is_string($source)) {
@@ -108,6 +113,10 @@ final class BardExtractor implements Extractor
         $type = $node['type'];
 
         if ($type === 'text') {
+            if ($this->isIgnored($node)) {
+                return;
+            }
+
             // The editor shows a newline inside a text node as a space; a
             // break the author made is a hardBreak node, handled below.
             $frame->text .= is_string($node['text'] ?? null) ? (string) preg_replace('/[\t\n\v\f\r ]+/', ' ', $node['text']) : '';
@@ -167,6 +176,24 @@ final class BardExtractor implements Extractor
 
             $this->walkAll($this->nodes($value), $inner, $path.'.'.$field, $blocks);
         }
+    }
+
+    /**
+     * @param  array<mixed>  $node
+     */
+    private function isIgnored(array $node): bool
+    {
+        if ($this->ignoredMarks === [] || ! is_array($node['marks'] ?? null)) {
+            return false;
+        }
+
+        foreach ($node['marks'] as $mark) {
+            if (is_array($mark) && in_array($mark['type'] ?? null, $this->ignoredMarks, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

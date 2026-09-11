@@ -24,6 +24,8 @@ final class Frame
      * @param  list<string>  $ancestors
      * @param  list<string>  $classes
      * @param  list<string>  $sets
+     * @param  list<string>  $ids
+     * @param  list<string>  $roles
      */
     private function __construct(
         public readonly string $tag,
@@ -32,6 +34,8 @@ final class Frame
         public readonly array $sets,
         public readonly ?string $path,
         public readonly int $level,
+        public readonly array $ids,
+        public readonly array $roles,
         private readonly bool $isRoot,
     ) {}
 
@@ -42,7 +46,7 @@ final class Frame
      */
     public static function root(): self
     {
-        return new self('body', [], [], [], null, 0, isRoot: true);
+        return new self('body', [], [], [], null, 0, [], [], isRoot: true);
     }
 
     /**
@@ -50,8 +54,10 @@ final class Frame
      *
      * @param  list<string>  $classes
      * @param  list<string>  $sets
+     * @param  list<string>  $ids
+     * @param  list<string>  $roles
      */
-    public function child(string $tag, array $classes = [], int $level = 0, array $sets = [], ?string $path = null): self
+    public function child(string $tag, array $classes = [], int $level = 0, array $sets = [], ?string $path = null, array $ids = [], array $roles = []): self
     {
         return new self(
             $tag,
@@ -60,6 +66,8 @@ final class Frame
             [...$this->sets, ...$sets],
             $path,
             $level,
+            [...$this->ids, ...$ids],
+            array_values(array_unique([...$this->roles, ...$roles])),
             isRoot: false,
         );
     }
@@ -83,7 +91,7 @@ final class Frame
         $blocks[] = new Block(
             BlockKind::forTag($this->tag),
             $text,
-            new Origin($this->tag, $this->ancestors, $this->classes, $this->sets, $this->path),
+            new Origin($this->tag, $this->ancestors, $this->classes, $this->sets, $this->path, $this->ids, $this->roles),
             $this->level,
         );
     }

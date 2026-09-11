@@ -55,6 +55,44 @@ One extractor per shape a field value has:
 Markdown is not a shape: render it with the host's own parser and hand the
 HTML to `HtmlExtractor`, so the text scored is the text published.
 
+## Exclusions
+
+Text that should not count is taken out before anything is scored: a score
+of the wrong text is not an estimate, it is a different number.
+
+```php
+use Bpmore\ReadabilityCore\Exclusion\Code;
+use Bpmore\ReadabilityCore\Exclusion\Pipeline;
+use Bpmore\ReadabilityCore\Exclusion\ProperNames;
+
+$exclude = ['html_classes' => ['no-readability'], 'bard_sets' => ['code', 'citation']];
+
+$document = (new HtmlExtractor(ignoredTags: Code::INLINE_TAGS, ignoredClasses: $exclude['html_classes']))
+    ->extract($html);
+
+$pipeline  = Pipeline::fromConfig($exclude);
+$forRules  = $pipeline->without(ProperNames::class)->apply($document);
+$forGrades = $pipeline->apply($document);
+```
+
+One class per exclusion, each on unless the config turns it off:
+
+| Exclusion         | Takes out                                                                     |
+|-------------------|-------------------------------------------------------------------------------|
+| `Code`            | Code blocks. Inline code needs the extractor: `Code::INLINE_TAGS` / `INLINE_MARKS`. |
+| `Quotes`          | Block quotations, attribution included. The score is of the author.           |
+| `References`      | A section under a "References"-type heading; blocks marked by class, id or DPUB role; blocks that read like a citation; and, inside a sentence, `[1]` and `(Smith et al., 2019)`. |
+| `FiguresInTables` | A table where a third of the cells are figures, whole; otherwise just the figures. |
+| `Addresses`       | Street lines, PO boxes, city-state-zip, UK and Canadian postcodes, phone numbers — cut out of the sentence, which stays. An `<address>` element whole. |
+| `IgnoredClasses`  | Anything inside an element with one of the site's classes.                    |
+| `IgnoredSets`     | Anything inside a Bard set with one of the site's handles.                    |
+| `ProperNames`     | Names, honorifics and acronyms — SC 3.1.5 grades text "after removal of proper names and titles". **For the formulas only:** the rules want the names in. |
+
+`ProperNames` has no dictionary and no tagger, only capitalisation, and it
+errs toward leaving a word in: a lone capitalised word at the start of a
+sentence stays, and so does every word of a title-case line. Its docblock
+says exactly what goes and what does not.
+
 ## Using it from a consumer
 
 Until it is published, point a Composer path repository at this directory:

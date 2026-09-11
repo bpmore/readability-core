@@ -120,3 +120,18 @@ it('refuses a string that is not JSON, which is probably HTML meant for the othe
 it('does not lose a text node that somehow sits at the top level', function () {
     expect(outline((new BardExtractor)->extract([['type' => 'text', 'text' => 'Loose words']])))->toBe([['other', 'Loose words']]);
 });
+
+it('leaves out text carrying an ignored mark, which is how Bard does inline code', function () {
+    $tree = [[
+        'type' => 'paragraph',
+        'content' => [
+            ['type' => 'text', 'text' => 'Run '],
+            ['type' => 'text', 'text' => 'composer install', 'marks' => [['type' => 'code']]],
+            ['type' => 'text', 'text' => ' first, ', 'marks' => [['type' => 'bold']]],
+            ['type' => 'text', 'text' => 'then go.'],
+        ],
+    ]];
+
+    expect((new BardExtractor)->extract($tree)->text())->toBe('Run composer install first, then go.');
+    expect((new BardExtractor(ignoredMarks: ['code']))->extract($tree)->text())->toBe('Run first, then go.');
+});

@@ -52,6 +52,19 @@ final class HtmlExtractor implements Extractor
     /** The document's own wrappers. They open no block of their own and are not recorded as ancestors. */
     private const WRAPPERS = ['html', 'body'];
 
+    /**
+     * @param  list<string>  $ignoredTags  elements to leave out with everything inside them, inline or block: `code` for inline code, say
+     * @param  list<string>  $ignoredClasses  classes that mark an element to leave out the same way
+     *
+     * Both exist because an inline element's text is part of its block by
+     * the time an exclusion sees a Block. A site's "ignore this" class on a
+     * `<span>` can only be honoured here.
+     */
+    public function __construct(
+        private readonly array $ignoredTags = [],
+        private readonly array $ignoredClasses = [],
+    ) {}
+
     public function extract(string|array $source): Document
     {
         if (! is_string($source)) {
@@ -95,8 +108,12 @@ final class HtmlExtractor implements Extractor
             }
 
             $tag = strtolower($child->nodeName);
+            $classes = $this->classes($child);
 
-            if (in_array($tag, self::DROPPED, true) || $this->isHidden($child)) {
+            if (in_array($tag, self::DROPPED, true)
+                || in_array($tag, $this->ignoredTags, true)
+                || array_intersect($this->ignoredClasses, $classes) !== []
+                || $this->isHidden($child)) {
                 continue;
             }
 
@@ -122,7 +139,13 @@ final class HtmlExtractor implements Extractor
                 continue;
             }
 
-            $inner = $frame->child($tag, $this->classes($child), $this->level($tag));
+            $inner = $frame->child(
+                $tag,
+                $classes,
+                $this->level($tag),
+                ids: $this->tokens($child, 'id'),
+                roles: $this->tokens($child, 'role'),
+            );
             $this->walk($child, $inner, $blocks, $preformatted || $tag === 'pre');
             $inner->flush($blocks);
         }
@@ -154,7 +177,18 @@ final class HtmlExtractor implements Extractor
      */
     private function classes(DOMElement $element): array
     {
-        return array_values(array_filter(preg_split('/\s+/', $element->getAttribute('class')) ?: []));
+        return $this->tokens($element, 'class');
+    }
+
+    /**
+     * A space-separated attribute's values. `role` takes a list too: a
+     * fallback role after the one the author means.
+     *
+     * @return list<string>
+     */
+    private function tokens(DOMElement $element, string $attribute): array
+    {
+        return array_values(array_filter(preg_split('/\s+/', $element->getAttribute($attribute)) ?: []));
     }
 
     private function level(string $tag): int
