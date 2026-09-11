@@ -1,0 +1,53 @@
+[
+    {"type": "heading", "attrs": {"level": 2}, "content": [{"type": "text", "text": "Before your visit"}]},
+    {"type": "paragraph", "content": [
+        {"type": "text", "text": "Bring your "},
+        {"type": "text", "text": "insurance card", "marks": [{"type": "bold"}]},
+        {"type": "text", "text": " and a list of medicines you take."},
+        {"type": "hardBreak"},
+        {"type": "text", "text": "Arrive 15 minutes early."}
+    ]},
+    {"type": "bulletList", "content": [
+        {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Photo ID"}]}]},
+        {"type": "listItem", "content": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Referral, if you have one"}]},
+            {"type": "bulletList", "content": [
+                {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Ask your doctor’s office"}]}]}
+            ]}
+        ]}
+    ]},
+    {"type": "blockquote", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "“The staff were wonderful.”"}]}]},
+    {"type": "codeBlock", "attrs": {"language": "php"}, "content": [{"type": "text", "text": "echo 'hi';"}]},
+    {"type": "image", "attrs": {"src": "asset::assets::clinic.jpg", "alt": "The clinic entrance"}},
+    {"type": "horizontalRule"},
+    {"type": "table", "content": [
+        {"type": "tableRow", "content": [
+            {"type": "tableHeader", "attrs": {"colspan": 1, "rowspan": 1, "colwidth": null}, "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Service"}]}]},
+            {"type": "tableCell", "attrs": {"colspan": 1, "rowspan": 1, "colwidth": null}, "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Cost"}]}]}
+        ]}
+    ]},
+    {"type": "set", "attrs": {"id": "lq2x8m1a", "enabled": true, "values": {
+        "type": "callout",
+        "title": "A plain string field the host must hand over itself",
+        "body": [
+            {"type": "paragraph", "content": [{"type": "text", "text": "Call us if your symptoms get worse."}]},
+            {"type": "paragraph", "content": [{"type": "text", "text": "We are open every day."}]}
+        ],
+        "link": "https://example.test/urgent-care"
+    }}},
+    {"type": "set", "attrs": {"id": "d1sab13d", "enabled": false, "values": {
+        "type": "callout",
+        "body": [{"type": "paragraph", "content": [{"type": "text", "text": "This set is disabled and must not appear."}]}]
+    }}},
+    {"type": "set", "attrs": {"id": "r3pl1c8r", "values": {
+        "type": "faq",
+        "questions": [
+            {"type": "question", "question": "A replicator row, not a Bard node", "answer": "Skipped without a crash"}
+        ]
+    }}},
+    {"type": "details", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Inside an extension node nobody here has heard of."}]}]},
+    {"type": "paragraph", "content": [{"type": "text"}]},
+    {"type": "mention", "attrs": {"id": "user-1"}},
+    "not a node at all",
+    {"type": "paragraph"}
+]

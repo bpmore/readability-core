@@ -19,11 +19,17 @@
         }
     ],
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "laravel/pint": "^1.27",
         "pestphp/pest": "^3.8 || ^4.0"
+    },
+    "suggest": {
+        "ext-intl": "Composes accented characters before they are counted, so an \"é\" typed as two code points is the same word as one typed as one."
     },
     "autoload": {
         "psr-4": {
