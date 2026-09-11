@@ -16,9 +16,9 @@ A site with both installed runs one engine, not two.
 
 ## Requirements
 
-PHP 8.2 or later with `dom`, `libxml` and `mbstring`, which every PHP has,
-and `davechild/textstatistics` for syllables. `intl` is optional: with it,
-accented characters are composed before they are counted.
+PHP 8.2 or later with `dom`, `libxml` and `mbstring`, which every PHP has.
+Nothing else at runtime. `intl` is optional: with it, accented characters
+are composed before they are counted.
 
 ## Extraction
 
@@ -120,14 +120,20 @@ against the same traps; the test file carries the corpus and the scores.
 
 ## Syllables
 
-Counting syllables is the hard part of every formula and the part worth
-taking from a library. `SyllableCounter` is the interface;
-`TextStatisticsSyllableCounter` is the implementation, over
-`davechild/textstatistics`, with two corrections made before the library
-sees a word: accents come off ("café" is not "caf") and a vowelless
-initialism is read letter by letter ("CDC" is three). The formulas are
-arithmetic and live here, so the library can be replaced without touching
-them.
+Counting syllables is the hard part of every formula. `SyllableCounter`
+is the interface; `EnglishSyllableCounter` is the implementation: the
+rules of Dave Child's Text-Statistics (from Greg Fast's
+Lingua::EN::Syllable), ported into this package rather than depended on,
+because that library's last release was in 2018 and it calls a function
+PHP has deprecated. The port matched it on every word of the system
+dictionary before the dependency was dropped; the notice its licence
+asks for is in `THIRD-PARTY-LICENSES.md`.
+
+Two corrections happen before the rules: accents come off ("café" is not
+"caf") and a vowelless initialism is read letter by letter ("CDC" is
+three). The exception lists are in the class, so a word that comes up
+wrong can be fixed in place — and the fidelity test will show exactly
+which other words the fix changed.
 
 ## Using it from a consumer
 
