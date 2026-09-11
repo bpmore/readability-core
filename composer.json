@@ -22,7 +22,8 @@
         "php": "^8.2",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "davechild/textstatistics": "^1.0"
     },
     "require-dev": {
         "laravel/pint": "^1.27",

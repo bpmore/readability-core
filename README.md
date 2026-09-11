@@ -16,9 +16,9 @@ A site with both installed runs one engine, not two.
 
 ## Requirements
 
-PHP 8.2 or later with `dom`, `libxml` and `mbstring`, which every PHP has.
-`intl` is optional: with it, accented characters are composed before they
-are counted.
+PHP 8.2 or later with `dom`, `libxml` and `mbstring`, which every PHP has,
+and `davechild/textstatistics` for syllables. `intl` is optional: with it,
+accented characters are composed before they are counted.
 
 ## Extraction
 
@@ -117,6 +117,17 @@ block; a hard break inside a block is one too. It was chosen over ICU's
 sentence iterator and the Packagist options by measuring all of them
 against the same traps; the test file carries the corpus and the scores.
 `Segmenter` is an interface, so a better one can be dropped in.
+
+## Syllables
+
+Counting syllables is the hard part of every formula and the part worth
+taking from a library. `SyllableCounter` is the interface;
+`TextStatisticsSyllableCounter` is the implementation, over
+`davechild/textstatistics`, with two corrections made before the library
+sees a word: accents come off ("café" is not "caf") and a vowelless
+initialism is read letter by letter ("CDC" is three). The formulas are
+arithmetic and live here, so the library can be replaced without touching
+them.
 
 ## Using it from a consumer
 
