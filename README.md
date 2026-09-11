@@ -164,8 +164,31 @@ $grades->byFormula();                 // ['Flesch-Kincaid' => 6.0, ...]
 counts list items (a bulleted list is a plain-language technique), treats
 a number as a one-syllable word, and counts Gunning's complex words with
 Gunning's exclusions: not compounds, and not words that reach three
-syllables only by an "-es", "-ed" or "-ing". What is shown to a person is
-a band made from these grades, never the decimals.
+syllables only by an "-es", "-ed" or "-ing".
+
+## The band
+
+What a person sees is a band, never a decimal. "Grade 9–10" says what the
+formulas know; "9.4" says something they do not, and is the number people
+argue with.
+
+```php
+use Bpmore\ReadabilityCore\Formula\Target;
+
+$band   = $grades->band();                                    // Band(9, 10)
+$target = Target::fromConfig(['grade' => 8, 'tolerance' => 1]); // 7–9
+
+$band->label();                 // "Grade 9–10" — or "Grade 17+" at the top
+$target->compare($band);        // Comparison::OnTarget | Above | Below
+```
+
+The band comes from the median of the four formulas, so one formula off
+on its own cannot move it (SMOG wanders on short text). It is a whole
+grade wide, floored at 1–2 and open at 17+. The verdict against the
+target is made from the band, not from the decimal behind it, so what is
+shown never contradicts what is said about it: a band that overlaps the
+target is on target. Above is the verdict that matters; below is not a
+problem and nothing should treat it as one.
 
 ## Using it from a consumer
 
