@@ -20,6 +20,27 @@ PHP 8.2 or later with `dom`, `libxml` and `mbstring`, which every PHP has.
 Nothing else at runtime. `intl` is optional: with it, accented characters
 are composed before they are counted.
 
+## English only, and it says so
+
+Every formula here was calibrated on English. Run on German they still
+return a number, and the number means nothing. So before anything is
+analysed, the site's locale is checked against the `locales` setting,
+and a site that is not on it gets no score and a message that says why.
+
+```php
+use Bpmore\ReadabilityCore\Locale\LocaleGuard;
+
+$decision = LocaleGuard::fromConfig(['locales' => ['en', 'en_US', 'en_GB']])->check($siteLocale);
+
+$decision->allowed;     // false for "fr"
+$decision->message();   // "Readability is not checked on this site. Its language is French (fr), and ..."
+```
+
+A bare language on the list (`en`) allows every region of it; a full
+locale (`en_US`) allows only itself. A site with no locale set is refused
+too, with a message that says to set one: "unknown" is not a language the
+formulas know either.
+
 ## Extraction
 
 Every analysis starts from a `Document`: the blocks of text a reader would
