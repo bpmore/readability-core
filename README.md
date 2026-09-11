@@ -93,6 +93,31 @@ errs toward leaving a word in: a lone capitalised word at the start of a
 sentence stays, and so does every word of a title-case line. Its docblock
 says exactly what goes and what does not.
 
+## Sentences
+
+Every formula divides by the number of sentences, so this is where a
+score is most easily put wrong. `EnglishSegmenter` splits a block's text
+by the rules of English punctuation and the abbreviations that break
+them: "Dr. Smith went to St. Louis Inc. yesterday." is one sentence, and
+"The meeting is at 3 p.m. Please be on time." is two.
+
+```php
+use Bpmore\ReadabilityCore\Text\EnglishSegmenter;
+
+foreach ($document as $block) {
+    foreach ((new EnglishSegmenter)->sentences($block->text) as $sentence) {
+        $sentence->text;     // trimmed
+        $sentence->offset;   // byte offset within the block's text
+    }
+}
+```
+
+A block boundary is always a sentence boundary, so segment block by
+block; a hard break inside a block is one too. It was chosen over ICU's
+sentence iterator and the Packagist options by measuring all of them
+against the same traps; the test file carries the corpus and the scores.
+`Segmenter` is an interface, so a better one can be dropped in.
+
 ## Using it from a consumer
 
 Until it is published, point a Composer path repository at this directory:
