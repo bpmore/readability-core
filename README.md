@@ -135,6 +135,33 @@ three). The exception lists are in the class, so a word that comes up
 wrong can be fixed in place — and the fidelity test will show exactly
 which other words the fix changed.
 
+## Grades
+
+The formulas are arithmetic over one set of tallies, so every grade is of
+the same words and sentences.
+
+```php
+use Bpmore\ReadabilityCore\Formula\Grades;
+use Bpmore\ReadabilityCore\Formula\Tally;
+
+$counts = (new Tally(new EnglishSegmenter, new EnglishSyllableCounter))->of($forGrades);
+$grades = Grades::of($counts);        // null when there is nothing to grade
+
+$grades->fleschKincaid;               // years of schooling, unrounded
+$grades->gunningFog;
+$grades->smog;
+$grades->colemanLiau;
+$grades->readingEase;                 // not a grade: higher is easier
+$grades->byFormula();                 // ['Flesch-Kincaid' => 6.0, ...]
+```
+
+`Tally` leaves headings out (they are section markers, not sentences),
+counts list items (a bulleted list is a plain-language technique), treats
+a number as a one-syllable word, and counts Gunning's complex words with
+Gunning's exclusions: not compounds, and not words that reach three
+syllables only by an "-es", "-ed" or "-ing". What is shown to a person is
+a band made from these grades, never the decimals.
+
 ## Using it from a consumer
 
 Until it is published, point a Composer path repository at this directory:
