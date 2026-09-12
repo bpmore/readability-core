@@ -40,8 +40,8 @@ it('takes its limits and severity from its options', function () {
 
     expect([$rule->words(), $rule->sentences()])->toBe([40, 3]);
     expect($rule->check(paragraphs(sentenceOf(41)))[0]->severity)->toBe(Severity::Tip);
-    expect($rule->check(paragraphs('A b. C d. E f. G h.'))[0]->message)->toContain('4 sentences')->toContain('past 3');
-    expect($rule->check(paragraphs(sentenceOf(40), 'A b. C d. E f.')))->toBe([]);
+    expect($rule->check(paragraphs('One two. Three four. Five six. Seven eight.'))[0]->message)->toContain('4 sentences')->toContain('past 3');
+    expect($rule->check(paragraphs(sentenceOf(40), 'One two. Three four. Five six.')))->toBe([]);
 });
 
 it('leaves headings alone and treats every other block, a bullet included, as a paragraph', function () {

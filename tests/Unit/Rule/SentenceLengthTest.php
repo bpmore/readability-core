@@ -74,24 +74,26 @@ it('counts each sentence of a block on its own, across sentence ends and hard br
 });
 
 it('runs both from the config with the thresholds wired together', function () {
-    $document = paragraphs(sentenceOf(25).' '.sentenceOf(26).' '.sentenceOf(50).' '.sentenceOf(51));
+    // Each sentence in its own paragraph, so the paragraph rule stays quiet.
+    $document = paragraphs(sentenceOf(25), sentenceOf(26), sentenceOf(50), sentenceOf(51));
+    $sentenceRules = fn (RuleSet $set, $document) => rules(...$set->check($document)->ofRule('long_sentence', 'very_long_sentence')->all());
 
-    expect(rules(...RuleSet::fromConfig([])->check($document)->all()))
+    expect($sentenceRules(RuleSet::fromConfig([]), $document))
         ->toBe(['long_sentence', 'long_sentence', 'very_long_sentence']);
 
     // The long limit moved to 20 and the very-long limit follows it to 40.
     $set = RuleSet::fromConfig(['long_sentence' => ['words' => 20]]);
-    expect(rules(...$set->check(paragraphs(sentenceOf(21).' '.sentenceOf(40).' '.sentenceOf(41)))->all()))
+    expect($sentenceRules($set, paragraphs(sentenceOf(21), sentenceOf(40), sentenceOf(41))))
         ->toBe(['long_sentence', 'long_sentence', 'very_long_sentence']);
 
     // Set on its own, the very-long limit is what it says.
     $set = RuleSet::fromConfig(['very_long_sentence' => ['words' => 30]]);
-    expect(rules(...$set->check(paragraphs(sentenceOf(30).' '.sentenceOf(31)))->all()))
+    expect($sentenceRules($set, paragraphs(sentenceOf(30), sentenceOf(31))))
         ->toBe(['long_sentence', 'very_long_sentence']);
 
     // Switched off, long sentences have no ceiling.
     $set = RuleSet::fromConfig(['very_long_sentence' => ['enabled' => false]]);
-    expect(rules(...$set->check(paragraphs(sentenceOf(80)))->all()))->toBe(['long_sentence']);
+    expect($sentenceRules($set, paragraphs(sentenceOf(80))))->toBe(['long_sentence']);
 });
 
 it('finds nothing in a document of short sentences', function () {
