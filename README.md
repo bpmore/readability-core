@@ -240,6 +240,32 @@ The suite includes `tests/ArchTest.php`, which fails the build if anything under
 `src/` references `Statamic\` or `Illuminate\`. Note in that file the reason it
 scans tokens rather than relying on Pest's `toUse()` alone.
 
+## Sections
+
+A page can average grade 8 while the paragraph that matters sits at 16,
+and only the per-section view shows it. Every heading, of any level,
+starts a section; what comes before the first is the lead.
+
+```php
+use Bpmore\ReadabilityCore\Formula\Sections;
+
+foreach (Sections::of($forRules, $tally, new ProperNames) as $section) {
+    $section->title();                 // the heading's text, '' for the lead
+    $section->level();                 // 1–6, 0 for the lead
+    $section->band();                  // Band, or null for a heading with nothing under it
+    $section->indexes;                 // its blocks' positions in $forRules
+    $section->findings($findings);     // the rule hits that point into it
+}
+
+Sections::hardestFirst($sections);     // the worst-offenders view
+```
+
+Sections are cut from the document the rules see, so their block
+indexes are the ones findings carry; the exclusion for grading is
+applied to each section's blocks on their own, which keeps names out of
+the grade without moving an index. Chunking is by block kind, so HTML,
+Bard and rendered markdown chunk alike.
+
 ## Rules
 
 The grade says "harder than you meant"; a rule says which sentence and

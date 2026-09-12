@@ -62,7 +62,13 @@ final class Findings implements Countable, IteratorAggregate
 
     public function inBlock(int $index): self
     {
-        return $this->filter(static fn (Finding $f): bool => $f->location?->block === $index);
+        return $this->inBlocks($index);
+    }
+
+    /** The findings located in any of these blocks; a finding about the whole document is in none. */
+    public function inBlocks(int ...$indexes): self
+    {
+        return $this->filter(static fn (Finding $f): bool => $f->location !== null && in_array($f->location->block, $indexes, true));
     }
 
     public function aboutWholeDocument(): self
