@@ -36,6 +36,7 @@ final class RuleSet
         return [
             LongSentence::HANDLE => static fn (array $options, array $all): Rule => new LongSentence($options, cap: self::veryLongThreshold($all)),
             VeryLongSentence::HANDLE => static fn (array $options, array $all): Rule => new VeryLongSentence($options, default: 2 * self::longThreshold($all)),
+            LongParagraph::HANDLE => static fn (array $options): Rule => new LongParagraph($options),
         ];
     }
 
