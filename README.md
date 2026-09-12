@@ -275,3 +275,25 @@ last, and can be filtered by rule, severity or block.
 | `long_paragraph` | A block over `words` (150) or over `sentences` (8); either alone. Every block but a heading. | warning |
 | `passive_voice` | Passive sentences as a share of the document, over `max_percent` (20) — **one finding, never one per sentence**, with the sentences attached as `spans` for highlighting. Quiet under `min_sentences` (5). | warning |
 | `unexpanded_acronym` | An acronym never spelled out, or spelled out after its first use. Once per acronym, at the first use. "Spelled out" is the convention — *Centers for Disease Control and Prevention (CDC)*, or the other way round — or a phrase whose initials spell it. The universally known are skipped; a site adds its own with `ignore`. | warning |
+| `jargon` | A term from the site's dictionary, with what to say instead; one finding per occurrence. Whole words, any case, inflections of a single word, longest phrase wins. `dictionary` is the starter by default. | warning |
+
+### The dictionary
+
+The starter is plainlanguage.gov's list of simple words and phrases (US
+federal work, public domain), in `resources/dictionaries/plain-language.json`.
+A site lays its own over it:
+
+```php
+use Bpmore\ReadabilityCore\Rule\Dictionary;
+use Bpmore\ReadabilityCore\Rule\Jargon;
+
+$site = Dictionary::fromArray([
+    'utilize' => 'use',
+    'in order to' => ['to'],
+    'please be advised that' => [],                                        // banned: say it another way
+    'HbA1c' => ['replacements' => ['A1C'], 'note' => 'Patients know A1C.'],
+]);
+
+$rule = new Jargon($options, Dictionary::starter()->merge($site));
+$site->toArray();   // for export, in the shape fromArray() reads
+```

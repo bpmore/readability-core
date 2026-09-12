@@ -39,6 +39,7 @@ final class RuleSet
             LongParagraph::HANDLE => static fn (array $options): Rule => new LongParagraph($options),
             PassiveVoice::HANDLE => static fn (array $options): Rule => new PassiveVoice($options),
             UnexpandedAcronym::HANDLE => static fn (array $options): Rule => new UnexpandedAcronym($options),
+            Jargon::HANDLE => static fn (array $options): Rule => new Jargon($options),
         ];
     }
 

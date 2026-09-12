@@ -163,8 +163,8 @@ it('refuses a rule handle it has never heard of, naming the ones it has', functi
 })->throws(InvalidArgumentException::class, 'No rule is called "long_sentance". The rules are: flags_words, counts_blocks.');
 
 it('ships these rules, in this order', function () {
-    expect(RuleSet::fromConfig([])->handles())->toBe(['long_sentence', 'very_long_sentence', 'long_paragraph', 'passive_voice', 'unexpanded_acronym']);
-    expect(fn () => RuleSet::fromConfig(['anything' => []]))->toThrow(InvalidArgumentException::class, 'The rules are: long_sentence, very_long_sentence, long_paragraph, passive_voice, unexpanded_acronym.');
+    expect(RuleSet::fromConfig([])->handles())->toBe(['long_sentence', 'very_long_sentence', 'long_paragraph', 'passive_voice', 'unexpanded_acronym', 'jargon']);
+    expect(fn () => RuleSet::fromConfig(['anything' => []]))->toThrow(InvalidArgumentException::class, 'The rules are: long_sentence, very_long_sentence, long_paragraph, passive_voice, unexpanded_acronym, jargon.');
     expect(RuleSet::fromConfig([], [])->handles())->toBe([]);
 });
 
