@@ -239,3 +239,30 @@ vendor/bin/pint --test   # formatting, check only; drop --test to fix
 The suite includes `tests/ArchTest.php`, which fails the build if anything under
 `src/` references `Statamic\` or `Illuminate\`. Note in that file the reason it
 scans tokens rather than relying on Pest's `toUse()` alone.
+
+## Rules
+
+The grade says "harder than you meant"; a rule says which sentence and
+what to do with it. One class per rule, each testable on its own with a
+`Document` and nothing else.
+
+```php
+use Bpmore\ReadabilityCore\Rule\RuleSet;
+
+$findings = RuleSet::fromConfig($config['rules'])->check($forRules);
+
+foreach ($findings as $finding) {
+    $finding->rule;        // 'long_sentence' — what a gate blocks on
+    $finding->severity;    // Severity::Error | Warning | Tip
+    $finding->message;     // what to do, in plain words
+    $finding->location;    // block index, byte offset and length — or null for a finding about the whole document
+    $finding->excerpt;     // the sentence or phrase, as written
+    $finding->suggestion;  // something to say instead, when the rule has one
+}
+```
+
+`RuleSet::fromConfig()` takes the spec's `rules` section: each handle's
+options, defaults for a rule the config does not mention, `'enabled' =>
+false` to leave one out, and a loud refusal for a handle it has never
+heard of. Findings come back in reading order, whole-document findings
+last, and can be filtered by rule, severity or block.
