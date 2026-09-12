@@ -276,6 +276,8 @@ last, and can be filtered by rule, severity or block.
 | `passive_voice` | Passive sentences as a share of the document, over `max_percent` (20) — **one finding, never one per sentence**, with the sentences attached as `spans` for highlighting. Quiet under `min_sentences` (5). | warning |
 | `unexpanded_acronym` | An acronym never spelled out, or spelled out after its first use. Once per acronym, at the first use. "Spelled out" is the convention — *Centers for Disease Control and Prevention (CDC)*, or the other way round — or a phrase whose initials spell it. The universally known are skipped; a site adds its own with `ignore`. | warning |
 | `jargon` | A term from the site's dictionary, with what to say instead; one finding per occurrence. Whole words, any case, inflections of a single word, longest phrase wins. `dictionary` is the starter by default. | warning |
+| `nominalization` | A verb hiding in a noun: *make a decision*, *the implementation of*. Only nouns on its list, so *make an appointment* is safe. Says the verb. | tip |
+| `filler` | Words that add nothing (*basically*, *it is important to note that*) — cut them — and hedges (*perhaps*, *in some cases*) — say it plainly. Shares no term with the jargon starter, so nothing gets a warning and a tip at once. `ignore` allows a word. | tip |
 
 ### The dictionary
 

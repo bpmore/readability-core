@@ -40,6 +40,8 @@ final class RuleSet
             PassiveVoice::HANDLE => static fn (array $options): Rule => new PassiveVoice($options),
             UnexpandedAcronym::HANDLE => static fn (array $options): Rule => new UnexpandedAcronym($options),
             Jargon::HANDLE => static fn (array $options): Rule => new Jargon($options),
+            Nominalization::HANDLE => static fn (array $options): Rule => new Nominalization($options),
+            Filler::HANDLE => static fn (array $options): Rule => new Filler($options),
         ];
     }
 
