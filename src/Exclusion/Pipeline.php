@@ -97,6 +97,20 @@ final class Pipeline implements Exclusion
     }
 
     /**
+     * The same pipeline with only the exclusions of these classes: the
+     * grading step on its own, `only(ProperNames::class)`, for Sections.
+     *
+     * @param  class-string<Exclusion>  ...$classes
+     */
+    public function only(string ...$classes): self
+    {
+        return new self(array_values(array_filter(
+            $this->exclusions,
+            static fn (Exclusion $exclusion): bool => in_array($exclusion::class, $classes, true),
+        )));
+    }
+
+    /**
      * @return list<Exclusion>
      */
     public function exclusions(): array

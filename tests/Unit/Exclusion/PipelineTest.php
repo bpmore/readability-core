@@ -45,6 +45,8 @@ it('can be taken apart by class and added to', function () {
         Code::class, Quotes::class, References::class, FiguresInTables::class,
     ]);
     expect(classesOf($pipeline->without(ProperNames::class)->with(new ProperNames)))->toBe(classesOf($pipeline));
+    expect(classesOf($pipeline->only(ProperNames::class)))->toBe([ProperNames::class]);
+    expect(classesOf(Pipeline::fromConfig(['proper_names' => false])->only(ProperNames::class)))->toBe([]);
     expect(classesOf(new Pipeline([])))->toBe([]);
 });
 
