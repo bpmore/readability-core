@@ -258,6 +258,7 @@ foreach ($findings as $finding) {
     $finding->location;    // block index, byte offset and length — or null for a finding about the whole document
     $finding->excerpt;     // the sentence or phrase, as written
     $finding->suggestion;  // something to say instead, when the rule has one
+    $finding->spans;       // for a whole-document finding, the places that made it
 }
 ```
 
@@ -272,3 +273,4 @@ last, and can be filtered by rule, severity or block.
 | `long_sentence` | A sentence over `words` (25). Stops where the next rule starts, so a sentence is never said twice. | warning |
 | `very_long_sentence` | A sentence over `words` — twice the long limit unless set, so 50. What a gate may block on. | error |
 | `long_paragraph` | A block over `words` (150) or over `sentences` (8); either alone. Every block but a heading. | warning |
+| `passive_voice` | Passive sentences as a share of the document, over `max_percent` (20) — **one finding, never one per sentence**, with the sentences attached as `spans` for highlighting. Quiet under `min_sentences` (5). | warning |

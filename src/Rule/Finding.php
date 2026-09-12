@@ -26,6 +26,14 @@ final class Finding
         public readonly string $excerpt = '',
         /** Something to say instead, when the rule has one: a jargon replacement. */
         public readonly ?string $suggestion = null,
+        /**
+         * Other places this finding points at, for highlighting. A finding
+         * about the whole document, like a passive-voice rate, lists the
+         * sentences that made it; they are not findings of their own.
+         *
+         * @var list<Location>
+         */
+        public readonly array $spans = [],
     ) {}
 
     public function isAboutWholeDocument(): bool

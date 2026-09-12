@@ -39,9 +39,11 @@ abstract class ConfiguredRule implements Rule
 
     /**
      * A finding of this rule, at this severity.
+     *
+     * @param  list<Location>  $spans
      */
-    protected function finding(string $message, ?Location $location = null, string $excerpt = '', ?string $suggestion = null): Finding
+    protected function finding(string $message, ?Location $location = null, string $excerpt = '', ?string $suggestion = null, array $spans = []): Finding
     {
-        return new Finding($this->handle(), $this->severity, $message, $location, $excerpt, $suggestion);
+        return new Finding($this->handle(), $this->severity, $message, $location, $excerpt, $suggestion, $spans);
     }
 }
