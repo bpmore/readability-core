@@ -25,18 +25,41 @@ final class RuleSet
 
     /**
      * The rules this package ships, by handle, each a factory taking its
-     * options. Rules are added here as they are written.
+     * own options and the whole `rules` section, for the few rules that
+     * need to know about a neighbour. Rules are added here as they are
+     * written.
      *
-     * @return array<string, callable(array<string, mixed>): Rule>
+     * @return array<string, callable(array<string, mixed>, array<string, mixed>): Rule>
      */
     public static function registry(): array
     {
-        return [];
+        return [
+            LongSentence::HANDLE => static fn (array $options, array $all): Rule => new LongSentence($options, cap: self::veryLongThreshold($all)),
+            VeryLongSentence::HANDLE => static fn (array $options, array $all): Rule => new VeryLongSentence($options, default: 2 * self::longThreshold($all)),
+        ];
+    }
+
+    /** The long-sentence limit the config sets, or the default. */
+    private static function longThreshold(array $all): int
+    {
+        return (new LongSentence(is_array($all[LongSentence::HANDLE] ?? null) ? $all[LongSentence::HANDLE] : []))->words();
+    }
+
+    /** The very-long limit the config sets or implies, or null when that rule is switched off and long sentences have no ceiling. */
+    private static function veryLongThreshold(array $all): ?int
+    {
+        $options = is_array($all[VeryLongSentence::HANDLE] ?? null) ? $all[VeryLongSentence::HANDLE] : [];
+
+        if (($options['enabled'] ?? true) === false) {
+            return null;
+        }
+
+        return (new VeryLongSentence($options, default: 2 * self::longThreshold($all)))->words();
     }
 
     /**
      * @param  array<string, mixed>  $config  the `rules` section: handle => options
-     * @param  array<string, callable(array<string, mixed>): Rule>|null  $registry  the rules to choose from; the package's own when null
+     * @param  array<string, callable(array<string, mixed>, array<string, mixed>): Rule>|null  $registry  the rules to choose from; the package's own when null
      */
     public static function fromConfig(array $config, ?array $registry = null): self
     {
@@ -61,7 +84,7 @@ final class RuleSet
                 continue;
             }
 
-            $rules[] = $make($options);
+            $rules[] = $make($options, $config);
         }
 
         return new self($rules);

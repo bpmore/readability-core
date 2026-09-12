@@ -266,3 +266,8 @@ options, defaults for a rule the config does not mention, `'enabled' =>
 false` to leave one out, and a loud refusal for a handle it has never
 heard of. Findings come back in reading order, whole-document findings
 last, and can be filtered by rule, severity or block.
+
+| Rule | Finds | Default |
+|---|---|---|
+| `long_sentence` | A sentence over `words` (25). Stops where the next rule starts, so a sentence is never said twice. | warning |
+| `very_long_sentence` | A sentence over `words` — twice the long limit unless set, so 50. What a gate may block on. | error |

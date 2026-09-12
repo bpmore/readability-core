@@ -162,10 +162,10 @@ it('refuses a rule handle it has never heard of, naming the ones it has', functi
     RuleSet::fromConfig(['long_sentance' => ['words' => 25]], registry());
 })->throws(InvalidArgumentException::class, 'No rule is called "long_sentance". The rules are: flags_words, counts_blocks.');
 
-it('ships no rules yet, and says so rather than guessing', function () {
-    expect(RuleSet::registry())->toBe([]);
-    expect(RuleSet::fromConfig([])->handles())->toBe([]);
-    expect(fn () => RuleSet::fromConfig(['anything' => []]))->toThrow(InvalidArgumentException::class, '(none)');
+it('ships these rules, in this order', function () {
+    expect(RuleSet::fromConfig([])->handles())->toBe(['long_sentence', 'very_long_sentence']);
+    expect(fn () => RuleSet::fromConfig(['anything' => []]))->toThrow(InvalidArgumentException::class, 'The rules are: long_sentence, very_long_sentence.');
+    expect(RuleSet::fromConfig([], [])->handles())->toBe([]);
 });
 
 it('can be taken apart by handle and added to', function () {
