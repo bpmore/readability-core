@@ -274,3 +274,4 @@ last, and can be filtered by rule, severity or block.
 | `very_long_sentence` | A sentence over `words` — twice the long limit unless set, so 50. What a gate may block on. | error |
 | `long_paragraph` | A block over `words` (150) or over `sentences` (8); either alone. Every block but a heading. | warning |
 | `passive_voice` | Passive sentences as a share of the document, over `max_percent` (20) — **one finding, never one per sentence**, with the sentences attached as `spans` for highlighting. Quiet under `min_sentences` (5). | warning |
+| `unexpanded_acronym` | An acronym never spelled out, or spelled out after its first use. Once per acronym, at the first use. "Spelled out" is the convention — *Centers for Disease Control and Prevention (CDC)*, or the other way round — or a phrase whose initials spell it. The universally known are skipped; a site adds its own with `ignore`. | warning |
