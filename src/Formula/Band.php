@@ -46,10 +46,14 @@ final class Band
         return new self(max(self::LOWEST, $grade - $tolerance), max(self::LOWEST, $grade + $tolerance));
     }
 
-    /** "Grade 9–10", "Grade 17+". English; a host with translations formats from low and high itself. */
+    /** "Grade 9–10", "Grade 17+", and "Grade 6" for a target with no tolerance. English; a host with translations formats from low and high itself. */
     public function label(): string
     {
-        return $this->high === null ? 'Grade '.$this->low.'+' : 'Grade '.$this->low.'–'.$this->high;
+        return match (true) {
+            $this->high === null => 'Grade '.$this->low.'+',
+            $this->high === $this->low => 'Grade '.$this->low,
+            default => 'Grade '.$this->low.'–'.$this->high,
+        };
     }
 
     public function isOpen(): bool

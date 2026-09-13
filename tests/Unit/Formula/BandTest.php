@@ -28,6 +28,7 @@ it('has a floor of grade 1 and an open band at the top, because the formulas sto
 it('makes a target band around a grade, and reads a tolerance as a distance', function () {
     expect(Band::around(8, 1))->toEqual(new Band(7, 9));
     expect(Band::around(8, 0))->toEqual(new Band(8, 8));
+    expect(Band::around(8, 0)->label())->toBe('Grade 8');
     expect(Band::around(1, 2))->toEqual(new Band(1, 3));   // never below grade 1
     expect(Band::around(8, -1))->toEqual(Band::around(8, 1));
 });
