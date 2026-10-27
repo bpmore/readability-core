@@ -4,7 +4,7 @@ What changed in each release, and what you have to do about it.
 
 Versions are `MAJOR.MINOR.PATCH`. Before 1.0 a breaking change raises the minor.
 
-## 0.2.0 - Unreleased
+## 0.2.0 - 2026-10-26
 
 Nothing to do on upgrade. Nothing that read the engine before reads anything
 different now.
