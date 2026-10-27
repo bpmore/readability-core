@@ -97,7 +97,7 @@ final class HtmlExtractor implements Extractor
                 // not a break, everywhere but in preformatted text. Folded to
                 // a space here so that a newline reaching the normaliser is
                 // always a break somebody put there.
-                $frame->text .= $preformatted ? $child->data : (string) preg_replace('/[\t\n\v\f\r ]+/', ' ', $child->data);
+                $frame->addText($child->data, fold: ! $preformatted);
 
                 continue;
             }
@@ -118,7 +118,7 @@ final class HtmlExtractor implements Extractor
             }
 
             if ($tag === 'br') {
-                $frame->text .= "\n";
+                $frame->addBreak();
 
                 continue;
             }

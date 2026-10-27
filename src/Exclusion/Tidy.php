@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bpmore\ReadabilityCore\Exclusion;
 
+use Bpmore\ReadabilityCore\Text\Tracked;
+
 /**
  * Closes the gaps that taking spans out of a sentence leaves. "I met
  * Dr. Smith at 501-686-7000." with the name and the number gone is
@@ -23,24 +25,32 @@ final class Tidy
 
     public static function text(string $text): string
     {
+        return self::track(Tracked::of($text))->text;
+    }
+
+    /**
+     * The same, keeping where every byte came from.
+     */
+    public static function track(Tracked $text): Tracked
+    {
         $lines = [];
 
-        foreach (explode("\n", $text) as $line) {
-            $line = (string) preg_replace('/\s*,?\s*'.self::GAP.'\s*,?/u', ' ', $line);
-            $line = (string) preg_replace('/\(\s*\)|\[\s*\]|"\s*"|\'\s*\'/', '', $line);   // brackets and quotes left empty
-            $line = (string) preg_replace('/[^\S\n]+/', ' ', $line);
-            $line = (string) preg_replace('/\s+([.,;:!?)\]])/', '$1', $line);           // no space before closing punctuation
-            $line = (string) preg_replace('/([(\[])\s+/', '$1', $line);                  // or after opening
-            $line = (string) preg_replace('/([,;:])(?:\s*[,;:])+/', '$1', $line);        // "Smith, , and" is one comma
-            $line = (string) preg_replace('/\s*[,;:]\s*([.!?])/', '$1', $line);            // "at,." ends with the period alone
-            $line = trim((string) preg_replace('/^[\s,;:]+/', '', $line));               // nothing leads with a comma
+        foreach ($text->split("\n") as [$line, $separator]) {
+            $line = $line->replace('/\s*,?\s*'.self::GAP.'\s*,?/u', ' ');
+            $line = $line->replace('/\(\s*\)|\[\s*\]|"\s*"|\'\s*\'/', '');   // brackets and quotes left empty
+            $line = $line->replace('/[^\S\n]+/', ' ');
+            $line = $line->replace('/\s+([.,;:!?)\]])/', '$1');           // no space before closing punctuation
+            $line = $line->replace('/([(\[])\s+/', '$1');                  // or after opening
+            $line = $line->replace('/([,;:])(?:\s*[,;:])+/', '$1');        // "Smith, , and" is one comma
+            $line = $line->replace('/\s*[,;:]\s*([.!?])/', '$1');            // "at,." ends with the period alone
+            $line = $line->replace('/^[\s,;:]+/', '')->trim();               // nothing leads with a comma
 
             // A line with no letter or digit left in it said only what was removed.
-            if (preg_match('/[\p{L}\p{N}]/u', $line) === 1) {
-                $lines[] = $line;
+            if (preg_match('/[\p{L}\p{N}]/u', $line->text) === 1) {
+                $lines[] = [$line, $separator];
             }
         }
 
-        return implode("\n", $lines);
+        return $text->join($lines);
     }
 }

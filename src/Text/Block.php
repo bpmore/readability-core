@@ -12,6 +12,13 @@ namespace Bpmore\ReadabilityCore\Text;
  *
  * The text is already normalised. A newline in it is a hard break the author
  * put there (`<br>`, a Bard `hardBreak`), never formatting from the source.
+ *
+ * A block an extractor made also keeps what the author wrote, before any of
+ * that cleaning (`written`), and where each byte of `text` came from in it
+ * (`positions`). A rule's finding is a position in `text`; writtenSpan()
+ * turns it into a position in what the author wrote, which is what an
+ * editor needs to underline the right words. A block built some other way,
+ * or changed with withText(), has no positions, and says so with null.
  */
 final class Block
 {
@@ -21,12 +28,37 @@ final class Block
         public readonly Origin $origin,
         /** Heading level, 1 to 6; zero for anything that is not a heading. */
         public readonly int $level = 0,
+        /** The text as the author wrote it, before any cleaning; null when unknown. */
+        public readonly ?string $written = null,
+        /** Where each byte of `text` came from in `written`; null when unknown. */
+        public readonly ?Tracked $positions = null,
     ) {}
 
-    /** The same block, saying less: what an exclusion leaves of it. */
+    /**
+     * The same block, saying less: what an exclusion leaves of it. What the
+     * author wrote is kept; where the new text came from is not known, so
+     * the positions go.
+     */
     public function withText(string $text): self
     {
-        return new self($this->kind, $text, $this->origin, $this->level);
+        return new self($this->kind, $text, $this->origin, $this->level, $this->written);
+    }
+
+    /** The same block, its text changed by an operation that kept track. */
+    public function withTracked(Tracked $text): self
+    {
+        return new self($this->kind, $text->text, $this->origin, $this->level, $this->written, $text);
+    }
+
+    /**
+     * Where a stretch of `text` is in what the author wrote: start and end,
+     * in bytes; or null when this block does not know.
+     *
+     * @return array{int, int}|null
+     */
+    public function writtenSpan(int $offset, int $length): ?array
+    {
+        return $this->positions?->span($offset, $length);
     }
 
     public function isHeading(): bool

@@ -113,19 +113,25 @@ final class BardExtractor implements Extractor
         $type = $node['type'];
 
         if ($type === 'text') {
+            $text = is_string($node['text'] ?? null) ? $node['text'] : '';
+
+            // Ignored text (inline code) is not read, but stays in what the
+            // author wrote, so positions match the editor's own text.
             if ($this->isIgnored($node)) {
+                $frame->addIgnored($text);
+
                 return;
             }
 
             // The editor shows a newline inside a text node as a space; a
             // break the author made is a hardBreak node, handled below.
-            $frame->text .= is_string($node['text'] ?? null) ? (string) preg_replace('/[\t\n\v\f\r ]+/', ' ', $node['text']) : '';
+            $frame->addText($text);
 
             return;
         }
 
         if ($type === 'hardBreak') {
-            $frame->text .= "\n";
+            $frame->addBreak();
 
             return;
         }

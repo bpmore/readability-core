@@ -44,28 +44,40 @@ final class Normalizer
             $text = mb_scrub($text, 'UTF-8');
         }
 
+        return self::track(Tracked::of($text))->text;
+    }
+
+    /**
+     * The same cleaning, keeping where every byte came from. The text must
+     * already be UTF-8; normalize() sees to that for a plain string.
+     */
+    public static function track(Tracked $text): Tracked
+    {
         // Composed form, so an "é" typed as two code points is the same word
         // as one typed as one. intl is not required at runtime, so this step
         // is skipped without it; a decomposed accent then miscounts at worst.
-        if (class_exists(\Normalizer::class)) {
-            $text = \Normalizer::normalize($text, \Normalizer::FORM_C) ?: $text;
+        // Composition never reaches across a grapheme, so composing each one
+        // is composing the whole, with each composed character mapped to the
+        // letters it was made from.
+        if (class_exists(\Normalizer::class) && ! \Normalizer::isNormalized($text->text, \Normalizer::FORM_C)) {
+            $text = $text->replaceWith('/\X/u', static fn (string $g): string => \Normalizer::normalize($g, \Normalizer::FORM_C) ?: $g);
         }
 
-        $text = str_replace(mb_str_split(self::INVISIBLE), '', $text);
-        $text = strtr($text, self::PUNCTUATION);
+        $text = $text->replace('/['.self::INVISIBLE.']/u', '');
+        $text = $text->replaceWith('/['.implode('', array_keys(self::PUNCTUATION)).']/u', static fn (string $c): string => self::PUNCTUATION[$c]);
 
         // Every Unicode space (no-break, thin, figure, ideographic) becomes
         // the plain one; the line and paragraph separators become newlines,
         // which is what they are.
-        $text = (string) preg_replace('/\p{Zs}/u', ' ', $text);
-        $text = (string) preg_replace('/[\x{2028}\x{2029}]/u', "\n", $text);
+        $text = $text->replace('/\p{Zs}/u', ' ');
+        $text = $text->replace('/[\x{2028}\x{2029}]/u', "\n");
 
         // Whitespace collapses to one space, except a newline, which is a hard
         // break and stays: bare, and never doubled.
-        $text = (string) preg_replace('/[^\S\n]+/', ' ', $text);
-        $text = (string) preg_replace('/ *\n */', "\n", $text);
-        $text = (string) preg_replace('/\n{2,}/', "\n", $text);
+        $text = $text->replace('/[^\S\n]+/', ' ');
+        $text = $text->replace('/ *\n */', "\n");
+        $text = $text->replace('/\n{2,}/', "\n");
 
-        return trim($text);
+        return $text->trim();
     }
 }

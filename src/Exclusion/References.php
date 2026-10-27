@@ -76,6 +76,23 @@ final class References implements Exclusion
                 continue;
             }
 
+            // With positions, cut and tidied keeping track; without, as before.
+            if ($block->positions !== null) {
+                $tracked = $block->positions;
+
+                foreach (self::INLINE as $inline) {
+                    $tracked = $tracked->replace($inline, Tidy::GAP);
+                }
+
+                $tracked = Tidy::track($tracked);
+
+                if ($tracked->text !== '') {
+                    $kept[] = $tracked->text === $block->text ? $block : $block->withTracked($tracked);
+                }
+
+                continue;
+            }
+
             $text = Tidy::text((string) preg_replace(self::INLINE, Tidy::GAP, $block->text));
 
             if ($text !== '') {

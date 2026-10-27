@@ -211,19 +211,53 @@ shown never contradicts what is said about it: a band that overlaps the
 target is on target. Above is the verdict that matters; below is not a
 problem and nothing should treat it as one.
 
+## What the author wrote, and where a finding is in it
+
+Everything above works on cleaned text: whitespace folded, quotes
+straightened, invisible characters gone, addresses and citations cut out of
+their sentences. A finding's position is a position in that text. An
+editor that wants to underline the words needs the position in what the
+author wrote, so every block an extractor makes keeps both:
+
+```php
+$block->written;                          // the text as written, before any cleaning
+$block->text;                             // the cleaned text the rules read
+$block->writtenSpan($offset, $length);    // [start, end] in $block->written, in bytes
+
+[$from, $to] = $block->writtenSpan($finding->location->offset, $finding->location->length);
+substr($block->written, $from, $to - $from);   // "“the  report”" for a finding on "\"the report\""
+```
+
+`written` is the block's text as the editor holds it: for Bard, every text
+node of the paragraph, inline code included (it is skipped by the rules but
+still there on the page), with a hard break as a newline. The map is carried
+through the cleaning and through the `Addresses` and `References`
+exclusions, which cut text out of sentences. A straightened quote leads back
+to the curly one, a folded run of spaces to the whole run, and text after a
+cut to where it stands.
+
+A block built by hand, or changed with `withText()`, has no map, and
+`writtenSpan()` says so with null. `ProperNames` changes text with
+`withText()`: it only shapes what the formulas count, never what a rule
+reports.
+
+The cleaned text is exactly what it was before positions existed: the test
+suite holds the tracked cleaning to copies of the old code on thousands of
+generated strings.
+
 ## Using it from a consumer
 
-Until it is published, point a Composer path repository at this directory:
+```sh
+composer require bpmore/readability-core
+```
 
-```json
-{
-    "repositories": [
-        { "type": "path", "url": "packages/readability-core" }
-    ],
-    "require": {
-        "bpmore/readability-core": "@dev"
-    }
-}
+To work on the engine and a consumer at once, clone this repository beside
+the consumer and point the consumer's Composer at it, without committing
+that:
+
+```sh
+composer config repositories.readability-core path ../readability-core
+composer update bpmore/readability-core
 ```
 
 ## Working on it
