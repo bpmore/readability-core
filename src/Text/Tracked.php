@@ -86,6 +86,24 @@ final class Tracked
     }
 
     /**
+     * Whether any byte of the text came from wholly inside this stretch of
+     * the source. A stretch the cleaning dropped (inline code the rules
+     * skip) has none; nor does one cut out and replaced as a whole (an
+     * address, whose gap maps to the whole cut, not to any part of it). A
+     * folded run of spaces, a straightened quote and a kept comma do.
+     */
+    public function readsWithin(int $from, int $to): bool
+    {
+        foreach ($this->starts as $i => $start) {
+            if ($start >= $from && $this->ends[$i] <= $to) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * As preg_replace with one pattern, the map carried through. The
      * replacement may use `$1` to `$99` for a captured group, which keeps
      * the group's own origins.

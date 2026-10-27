@@ -88,3 +88,19 @@ it('has no positions for a block built by hand, as before', function () {
     expect($block->written)->toBeNull()->and($block->writtenSpan(0, 4))->toBeNull()
         ->and((new Document([$block]))->blocks[0]->text)->toBe('Text.');
 });
+
+it('says which stretches of what was written are read, and which were skipped or cut', function () {
+    $bard = [['type' => 'paragraph', 'content' => [
+        ['type' => 'text', 'text' => 'Run  this, '],
+        ['type' => 'text', 'text' => 'npm  run', 'marks' => [['type' => 'code']]],
+        ['type' => 'text', 'text' => " then call (501) 686-7000 \u{201C}now\u{201D}."],
+    ]]];
+    $block = (new Addresses)->apply((new BardExtractor(ignoredMarks: Code::INLINE_MARKS))->extract($bard))->blocks[0];
+    $at = fn (string $needle) => [strpos((string) $block->written, $needle), strpos((string) $block->written, $needle) + strlen($needle)];
+
+    expect($block->isRead(...$at('  this')))->toBeTrue()
+        ->and($block->isRead(...$at('npm  run')))->toBeFalse()
+        ->and($block->isRead(...$at('(501) 686-7000')))->toBeFalse()
+        ->and($block->isRead(...$at("\u{201C}")))->toBeTrue()
+        ->and((new Block(BlockKind::Paragraph, 'x', new Origin('p')))->isRead(0, 1))->toBeNull();
+});

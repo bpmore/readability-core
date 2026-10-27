@@ -236,6 +236,11 @@ exclusions, which cut text out of sentences. A straightened quote leads back
 to the curly one, a folded run of spaces to the whole run, and text after a
 cut to where it stands.
 
+A check that reads `written` itself, to see what cleaning would hide (two
+spaces, a curly quote), can ask `$block->isRead($from, $to)` whether that
+stretch is read at all, and leave inline code and cut addresses alone as
+the rules do.
+
 A block built by hand, or changed with `withText()`, has no map, and
 `writtenSpan()` says so with null. `ProperNames` changes text with
 `withText()`: it only shapes what the formulas count, never what a rule

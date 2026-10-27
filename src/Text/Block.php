@@ -61,6 +61,17 @@ final class Block
         return $this->positions?->span($offset, $length);
     }
 
+    /**
+     * Whether a stretch of what the author wrote is read at all: false for
+     * text the engine skips (inline code) or cut out (an address, a
+     * citation); null when this block does not know. For a check that reads
+     * `written` directly, so it can leave what the engine leaves.
+     */
+    public function isRead(int $from, int $to): ?bool
+    {
+        return $this->positions?->readsWithin($from, $to);
+    }
+
     public function isHeading(): bool
     {
         return $this->kind === BlockKind::Heading;

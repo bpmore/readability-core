@@ -15,6 +15,9 @@ different now.
   `written`. The map is kept through normalising and through the
   `Addresses` and `References` exclusions. For Bard, `written` includes
   inline code the rules skip, so it matches the paragraph in the editor.
+  `isRead()` says whether a stretch of `written` is read at all, for a
+  check that reads `written` directly and should leave what the engine
+  leaves (inline code, a cut address).
 - **The cleaning is unchanged.** `Normalizer` and the exclusions' tidying
   now run on `Text\Tracked`, which carries the map; tests hold their output
   to copies of the old code on thousands of generated strings, and every
