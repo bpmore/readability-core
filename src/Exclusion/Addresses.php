@@ -52,6 +52,17 @@ final class Addresses extends PerBlock
             return null;
         }
 
+        // With positions, cut and tidied keeping track; without, as before.
+        if ($block->positions !== null) {
+            $tracked = $block->positions;
+
+            foreach (self::SPANS as $span) {
+                $tracked = $tracked->replace($span, Tidy::GAP);
+            }
+
+            return $tracked->text === $block->text ? $block : $block->withTracked(Tidy::track($tracked));
+        }
+
         $text = (string) preg_replace(self::SPANS, Tidy::GAP, $block->text);
 
         return $text === $block->text ? $block : $block->withText(Tidy::text($text));

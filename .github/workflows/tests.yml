@@ -1,0 +1,59 @@
+# The engine's suite, on every push to main and every pull request. It boots
+# nothing, so it is two jobs: the newest of everything on PHP 8.4, and the
+# oldest the manifest allows on PHP 8.2, which is the only thing that keeps
+# the floor in composer.json true.
+
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}, ${{ matrix.dependencies }} dependencies
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.4'
+            dependencies: highest
+          - php: '8.2'
+            dependencies: lowest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Check the manifest is well formed
+        run: composer validate --strict
+
+      - name: Install dependencies
+        if: matrix.dependencies == 'highest'
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      # `--prefer-stable` with `--prefer-lowest` takes the oldest stable
+      # release of each dependency, which is what a real install can get.
+      - name: Install the oldest dependencies the manifest allows
+        if: matrix.dependencies == 'lowest'
+        run: composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction --no-progress
+
+      - name: Check formatting
+        run: vendor/bin/pint --test
+
+      - name: Run the suite
+        run: vendor/bin/pest

@@ -25,7 +25,7 @@ final class PlainTextExtractor implements Extractor
 
         foreach ($paragraphs as $paragraph) {
             $frame = Frame::root()->child('p');
-            $frame->text = $paragraph;
+            $frame->addText($paragraph, fold: false);
             $frame->flush($blocks);
         }
 

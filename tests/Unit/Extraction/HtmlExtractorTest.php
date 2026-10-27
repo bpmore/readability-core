@@ -118,7 +118,15 @@ it('decodes entities and reads UTF-8 without a charset declaration', function ()
 
 it('reads a bare fragment with no body, and bare text with no element at all', function () {
     expect(outline((new HtmlExtractor)->extract('<p>One</p><p>Two</p>')))->toBe([['paragraph', 'One'], ['paragraph', 'Two']]);
-    expect(outline((new HtmlExtractor)->extract('Just words')))->toBe([['other', 'Just words']]);
+
+    // Bare text is read either way; what kind of block it is depends on the
+    // libxml PHP was built with. libxml 2.9 (Ubuntu 24.04, GitHub's runners)
+    // implies a <p> around it; 2.15 does not, and the block is "other".
+    $bare = outline((new HtmlExtractor)->extract('Just words'));
+
+    expect($bare)->toHaveCount(1)
+        ->and($bare[0][1])->toBe('Just words')
+        ->and($bare[0][0])->toBeIn(['other', 'paragraph']);
 });
 
 it('produces no blocks for markup that says nothing', function () {
